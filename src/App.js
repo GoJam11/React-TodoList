@@ -1,126 +1,85 @@
- import React from 'react';
-import logo from './logo.svg';
-import { AppBar, Typography, Toolbar, makeStyles, Grid, List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, MenuItem } from '@material-ui/core'
+import React from 'react';
+import { combineReducers, createStore } from 'redux'
+import {Provider} from 'react-redux'
+import { AppBar, Typography, Toolbar, makeStyles, Grid, IconButton, MenuItem, Input } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 import './App.css';
+import { addTodo, toggleTodo, editTodo, todos, color } from './store'
+import FormDialog from './Dialog'
+import TodoList from './TodoList'
+
+//store
+export let app;//根组件的引用
 
 
-// const context = React.createContext(store)
-// context.Provider <- store
-// context.Consumer -> store
-//Provider -< store
-// connect()(TodoItem)
 
 
-class TodoItem extends React.Component {
-  constructor(props) {
-    super(props);
-    /*this.classes = makeStyles((theme) => ({
-      checkBox: {
-        backgroundColor: '#61b0fb'
-      }
-    }))();*/
-    this.handleCheck = this.handleCheck.bind(this)
-    this.modifyAt=this.modifyAt.bind(this)
+/*let appReducer = function (state = {}, action) {
+  return {
+    todos: todo_reducer(state.todos, action),
+    color: config_reducer(state.color, action)
   }
-  modifyAt(e){
-    
-    this.props.onModify(this.props['data-key'],'fobidden')
-  }
-  handleCheck(e) {
-    this.props.onChecked(this.props['data-key'])
-  }
-  render() {
-    return <ListItem button>
-      <ListItemText contentEditable onInput={this.modifyAt} primary={this.props.text}> </ListItemText>
-      <ListItemSecondaryAction>
-        <Checkbox color="default" onChange={this.handleCheck}></Checkbox>
-      </ListItemSecondaryAction>
-    </ListItem>
-  }
+}*/
+
+let appReducer = combineReducers({ todos, color })
+export let store = createStore(appReducer)
+//console.log(store.getState(),store)
+export let dispatch = function (action) {
+  store.dispatch(action);
+  //app.setState({})
 }
 
-class TodoList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.removeAt = this.removeAt.bind(this);
-    this.modifyAt=this.modifyAt.bind(this)
-  }
 
-  removeAt(index) {
-    this.props.onRemove(index)
-  }
-  modifyAt(index,value){
-    this.props.onModify(index,value)
-  }
-  render() {
-    const items = this.props.text.map((item, index) => <TodoItem key={index} data-key={index} onModify={this.modifyAt} onChecked={this.removeAt} text={item}></TodoItem>);
-    return (<List>
-      {items}
-    </List>)
-  }
-}
+
 
 class App extends React.Component {
   constructor() {
     super();
-    /*this.classes = makeStyles((them) => ({
-      bar: {
-        backgroundColor: '#61b0fb'
-      }
-    }))();*/
-    this.state = { todoArray: ['to', 'do'] };
-    this.removeAt = this.removeAt.bind(this);
-    this.newItem = this.newItem.bind(this);
-    this.modifyAt=this.modifyAt.bind(this)
-  }
-
-
-  removeAt(index) {
-    let newText = [...this.state.todoArray]
-    newText.splice(index, 1)
-    this.setState({
-      todoArray: newText
-    })
+    app = this;
+    this.state = {
+      openDialog: false
+    }
 
   }
-
-  newItem() {
-
-    this.setState({
-      todoArray: [...this.state.todoArray, 'new']
-    })
-  }
-
-  modifyAt(index,value){
-    let newText = [...this.state.todoArray]
-    newText.splice(index, 1,value)
-    this.setState({
-      todoArray: newText
-    })
+  createItem() {
+    dispatch(addTodo('HI'))
   }
 
   render() {
     return (
+      <Provider store={store}>
       <div className="App" >
         <Grid container>
           <Grid item xs={12}>
-            <AppBar position="sticky" /*className={this.classes.bar}*/ style={{ backgroundColor: '#61b0fb' }}>
+            <AppBar position="sticky" style={{ backgroundColor: '#61b0fb' }}>
               <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="h6">Todo</Typography>
-                <IconButton onClick={this.newItem} >
+                <IconButton onClick={() => this.setState({ openDialog: true })} >
                   <AddIcon style={{ color: 'white' }}></AddIcon>
                 </IconButton>
               </Toolbar>
             </AppBar>
           </Grid>
           <Grid item xs={12}>
-            <TodoList text={this.state.todoArray} onModify={this.modifyAt} onRemove={this.removeAt}></TodoList>
+            <TodoList ></TodoList>
           </Grid>
         </Grid>
+        <FormDialog open={this.state.openDialog} onClose={() => { this.setState({ openDialog: false }) }}></FormDialog>
       </div>
+      </Provider>
     );
   }
 }
 
 export default App;
+
+
+/*class Provider extends React.Component{
+  constructor(props){
+    super(props)
+  }
+  render(){
+    return <>
+  }
+}*/
+
