@@ -1,8 +1,8 @@
 import React from 'react'
-import {store} from './App'
-import {editTodo,toggleTodo} from './store'
-import {connect} from 'react-redux'
-import {ListItem, ListItemSecondaryAction, ListItemText, Checkbox } from '@material-ui/core'
+import { store } from './App'
+import { editTodo, toggleTodo } from './store'
+import { connect } from 'react-redux'
+import { ListItem, ListItemSecondaryAction, ListItemText, Checkbox } from '@material-ui/core'
 class TodoItem extends React.Component {
     constructor(props) {
         super(props);
@@ -20,17 +20,16 @@ class TodoItem extends React.Component {
     }
 
     handleChange(value, index) {
-        this.props.onChange(index,value)
+        this.props.onChange(index, value)
         this.setState({
             editing: false
         })
-       
+
     }
 
     handleKeyPress(e, index) {
         if (e.key == 'Enter') {
-            this.props.onChange(index,e.target.value)
-            
+            this.props.onChange(index, e.target.value)
             this.setState({
                 editing: false
             })
@@ -59,16 +58,16 @@ class TodoItem extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    
+
 })
 
 const mapDispatchToProps = dispatch => ({
     onCheck: index => {
         dispatch(toggleTodo(index))
     },
-    onChange:(index,text)=>{
-        dispatch(editTodo(index,text));
-        
+    onChange: (index, text) => {
+        dispatch(editTodo(index, text));
+
     }
 })
 
